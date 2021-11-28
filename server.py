@@ -14,8 +14,15 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if(self.path == '/favicon.ico'):
             self.send_error(404, "")
-        else:
+            return
+        try:
             self.streamResponse()
+        except ConnectionResetError:
+            print("connection reset error")
+            return
+        except BrokenPipeError:
+            print("connection aborted")
+            return
 
     def streamResponse(self):
         parts = self.headers.get('Range', 'bytes=0-').replace('bytes=', '').split('-')
