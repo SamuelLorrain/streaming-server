@@ -41,5 +41,6 @@ class handler(BaseHTTPRequestHandler):
         chunk = self.videoStream.read(end)
         self.wfile.write(chunk)
 
-server = ThreadingHTTPServer(server_address=(ADDRESS, PORT), RequestHandlerClass=handler)
-server.serve_forever()
+if __name__ == '__main__':
+    server = ThreadingHTTPServer(server_address=(ADDRESS, PORT), RequestHandlerClass=handler)
+    server.serve_forever()
