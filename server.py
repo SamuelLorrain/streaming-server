@@ -1,4 +1,4 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 import io
 import os
 
@@ -41,5 +41,5 @@ class handler(BaseHTTPRequestHandler):
         chunk = self.videoStream.read(end)
         self.wfile.write(chunk)
 
-server = HTTPServer(server_address=(ADDRESS, PORT), RequestHandlerClass=handler)
+server = ThreadingHTTPServer(server_address=(ADDRESS, PORT), RequestHandlerClass=handler)
 server.serve_forever()
