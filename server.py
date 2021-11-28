@@ -21,7 +21,7 @@ class handler(BaseHTTPRequestHandler):
         parts = self.headers.get('Range', 'bytes=0-').replace('bytes=', '').split('-')
         start = int(parts[0])
         # compute end byte of Range request
-        end = int(parts[1]) if len(parts) == 2 and parts[1] != '' else self.computeLength(start)
+        end = int(parts[1]) if len(parts) == 2 and parts[1] != '' else self.length - 1
 
         self.send_response(code=206)
         self.send_header('Content-Type', CONTENT_TYPE)
@@ -29,15 +29,10 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Accept-Ranges', 'bytes')
         self.send_header('Content-Range', f'bytes {start}-{end}/{self.length}')
         self.end_headers()
+        self.videoStream.flush()
         self.videoStream.seek(start)
         chunk = self.videoStream.read(end)
         self.wfile.write(chunk)
-
-    def computeLength(self, start):
-        MAX_STREAM_CHUNK_SIZE = 1000
-        if start + MAX_STREAM_CHUNK_SIZE > self.length - 1:
-            return self.length - 1
-        return start + MAX_STREAM_CHUNK_SIZE
 
 server = HTTPServer(server_address=(ADDRESS, PORT), RequestHandlerClass=handler)
 server.serve_forever()
